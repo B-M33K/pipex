@@ -6,14 +6,11 @@
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 11:06:46 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/17 13:22:43 by obahi            ###   ########.fr       */
+/*   Updated: 2023/01/17 14:38:24 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include<unistd.h>
-#include<sys/wait.h>
-#include<stdio.h>
-#include"libft/libft.h"
+
 
 void    ft_free(char **ptr)
 {
@@ -27,6 +24,8 @@ char    **ft_path(char  **envp)
     char    **path;
     int     i;
 
+    if (!envp)
+        return (0);
     i = 0;
     while (*(envp + i))
     {
@@ -39,116 +38,151 @@ char    **ft_path(char  **envp)
     }
     path = ft_split(paths, ':');
     i = 0;
-    while (*(paths + i))
+    while (*(path + i))
     {
-        free(*(paths + i));
+        *(path + i) = ft_strjoin(*(path + i), "/");
         i++;
     }
-    free(path);
+    free(paths);
     return (path);
 }
 
-
-char    *get_path(char *cmd, char **envp)
+char    *ft_cmd(char *cmd, char **path)
 {
-    char    *path;
     char    *tmp;
-    char    **paths;
+    char    *cmmd;
     int     i;
 
+    if (!path)
+        return (0);
     i = 0;
-    tmp = cmd;
-    cmd = ft_strjoin("/", cmd);
-    ft_free(&tmp);
-    while (*(envp + i))
+    while (*(path + i))
     {
-        if (!ft_strncmp(*(envp + i), "PATH", 4))
-        {
-            path = ft_strdup(*(envp + i) + 5);
-            break;
-        }
-        i++;
-    }
-    paths = ft_split(path, ':');
-    ft_free(&path);
-    i = 0;
-    while (*(paths + i))
-    {
-        tmp = cmd;
-        cmd = ft_strjoin(*(paths + i), tmp);
+        tmp = ft_strjoin(*(path + i), cmd);
         if (!access(tmp, F_OK | X_OK))
         {
-            free(cmd);
-            cmd = tmp;
+            cmmd = tmp;
+            free(tmp);
             break;
         }
+        free(tmp);
         i++;
     }
-    return (cmd);
+    return (cmmd);
 }
-int main(int argc, char ** argv, char **envp)
+
+int main(int argc, char **argv, char **envp)
 {
-    //./pipex "ls -l"
+    char    **path;
     char    *cmd;
-    char    **args;
-    char    *tmp;
-    char    *path;
-    char    **paths;
     int     i;
-    pid_t   id;
-    int     status;
-    if (argc == 2)
-    {
-        args = ft_split(*(argv + 1), ' ');
-        // i = 0;
-        // while (*(args + i))
-        // {
-        //     printf("%s \n",*(args + i));
-        //     i++;
-        // }
-        cmd = get_path(*args, envp);
-        // cmd = *args;
-        // tmp = cmd;
-        // cmd = ft_strjoin("/", cmd);
-        // free(tmp);
-        // tmp = 0;
-        // // printf("%s \n",cmd);
-        // i = 0;
-        // while (*(envp + i))
-        // {
-        //     if (!ft_strncmp(*(envp + i), "PATH", 4))
-        //     {
-        //         path = ft_strdup(*(envp + i) + 5);
-        //         break;
-        //     }
-        //     i++;
-        // }
-        // paths = ft_split(path, ':');
-        // i = 0;
-        // while (*(paths + i))
-        // {
-        //     tmp = ft_strjoin(*(paths + i), cmd);
-        //     if (!access(tmp, F_OK | X_OK))
-        //     {
-        //         free(cmd);
-        //         cmd = tmp;
-        //         break;
-        //     }
-        //     i++;
-        // }
-        // // printf("%s ",cmd);
-        // free(path);
-        id = fork();
-        if (id >= 0)
-        {
-            if (!id)
-            {
-                execve(cmd, args, 0);
-            }
-        }
-        else
-        {
-            wait(&status);
-        }   
-    }
+
+    path = ft_path(envp);
+    cmd = ft_cmd("ls", path);
+    printf("%s", cmd);
+    while(1);
 }
+
+// char    *get_path(char *cmd, char **envp)
+// {
+//     char    *path;
+//     char    *tmp;
+//     char    **paths;
+//     int     i;
+
+//     i = 0;
+//     tmp = cmd;
+//     cmd = ft_strjoin("/", cmd);
+//     ft_free(&tmp);
+//     while (*(envp + i))
+//     {
+//         if (!ft_strncmp(*(envp + i), "PATH", 4))
+//         {
+//             path = ft_strdup(*(envp + i) + 5);
+//             break;
+//         }
+//         i++;
+//     }
+//     paths = ft_split(path, ':');
+//     ft_free(&path);
+//     i = 0;
+//     while (*(paths + i))
+//     {
+//         tmp = cmd;
+//         cmd = ft_strjoin(*(paths + i), tmp);
+//         if (!access(tmp, F_OK | X_OK))
+//         {
+//             free(cmd);
+//             cmd = tmp;
+//             break;
+//         }
+//         i++;
+//     }
+//     return (cmd);
+// }
+// int main(int argc, char ** argv, char **envp)
+// {
+//     //./pipex "ls -l"
+//     char    *cmd;
+//     char    **args;
+//     char    *tmp;
+//     char    *path;
+//     char    **paths;
+//     int     i;
+//     pid_t   id;
+//     int     status;
+//     if (argc == 2)
+//     {
+//         args = ft_split(*(argv + 1), ' ');
+//         // i = 0;
+//         // while (*(args + i))
+//         // {
+//         //     printf("%s \n",*(args + i));
+//         //     i++;
+//         // }
+//         cmd = get_path(*args, envp);
+//         // cmd = *args;
+//         // tmp = cmd;
+//         // cmd = ft_strjoin("/", cmd);
+//         // free(tmp);
+//         // tmp = 0;
+//         // // printf("%s \n",cmd);
+//         // i = 0;
+//         // while (*(envp + i))
+//         // {
+//         //     if (!ft_strncmp(*(envp + i), "PATH", 4))
+//         //     {
+//         //         path = ft_strdup(*(envp + i) + 5);
+//         //         break;
+//         //     }
+//         //     i++;
+//         // }
+//         // paths = ft_split(path, ':');
+//         // i = 0;
+//         // while (*(paths + i))
+//         // {
+//         //     tmp = ft_strjoin(*(paths + i), cmd);
+//         //     if (!access(tmp, F_OK | X_OK))
+//         //     {
+//         //         free(cmd);
+//         //         cmd = tmp;
+//         //         break;
+//         //     }
+//         //     i++;
+//         // }
+//         // // printf("%s ",cmd);
+//         // free(path);
+//         id = fork();
+//         if (id >= 0)
+//         {
+//             if (!id)
+//             {
+//                 execve(cmd, args, 0);
+//             }
+//         }
+//         else
+//         {
+//             wait(&status);
+//         }   
+//     }
+// }
