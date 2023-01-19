@@ -6,183 +6,115 @@
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 11:06:46 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/17 14:38:24 by obahi            ###   ########.fr       */
+/*   Updated: 2023/01/19 12:53:50 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include"pipex.h"
 
-
-void    ft_free(char **ptr)
+int	main(int argc, char **argv, char **envp)
 {
-    free(*ptr);
-    *ptr = 0;
+	char	**path;
+	char	**args;
+	char	*cmd;
+	int		t[2];
+	int		infile;
+	int		outfile;
+	pid_t	pid;
+	int		p;
+	int		d;
+	int		x;
+
+	// ./pipex infile cmd1 cmd2 outfile
+	// 		0	 1		2	 3	   4
+	if (argc == 5)
+	{
+		path = ft_path(envp);
+		infile = open(*(argv + 1), O_RDONLY);
+		outfile = open(*(argv + 4), O_WRONLY | O_TRUNC | O_CREAT, 0777);
+		p = dup2(infile, 0);
+		ft_perror(p, "infile dup failed");
+		// if (p == -1)
+		// {
+		// 	perror("infile dup failed : ");
+		// 	exit(1);
+		// }
+		close(infile);
+		p = dup2(outfile, 1);
+		ft_perror(p, "outfile dup failed");
+		// if (p == -1)
+		// {
+		// 	perror("outfile dup failed : ");
+		// 	exit(1);
+		// }
+		close(outfile);
+		p = pipe(t);
+		ft_perror(p, "pipe failed");
+		// if (p == -1)
+		// {
+		// 	perror("pipe failed : ");
+		// 	exit(1);
+		// }
+		pid = fork();
+		ft_perror(pid, "fork 1 failed");
+		// if (pid == -1)
+		// {
+		// 	perror("fork 1 failed : ");
+		// 	exit(1);
+		// }
+		if (!pid)
+		{
+			args = ft_split(*(argv + 2), ' ');
+			cmd = ft_cmd(*args, path);
+			close(t[0]);
+			d = dup2(t[1], 1);
+			ft_perror(d, "t[1] dup failed");
+			// if (d == -1)
+			// {
+			// 	perror("t[1] dup failed : ");
+			// 	exit(1);
+			// }
+			close(t[1]);
+			x = execve(cmd, args, envp);
+			ft_perror(x, "execve cmd1 failed");
+			// if (x == -1)
+			// {
+			// 	perror("execve cmd1 failed : ");
+			// 	exit(1);
+			// }
+		}
+		pid = fork();
+		ft_perror(pid, "fork 2 failed");
+		// if (pid == -1)
+		// {
+		// 	perror("fork 2 failed : ");
+		// 	exit(1);
+		// }
+		if (!pid)
+		{
+			args = ft_split(*(argv + 3), ' ');
+			cmd = ft_cmd(*args, path);
+			close(t[1]);
+			d = dup2(t[0], 0);
+			ft_perror(d, "t[0] dup failed");
+			// if (d == -1)
+			// {
+			// 	perror("t[0] dup failed : ");
+			// 	exit(0);
+			// }
+			close(t[0]);
+			x = execve(cmd, args, envp);
+			ft_perror(x, "execve cmd2 failed");
+			// if (x == -1)
+			// {
+			// 	perror("execve cmd2 failed : ");
+			// 	exit(1);
+			// }
+		}
+		close(t[0]);
+		close(t[1]);
+		waitpid(-1, 0, 0);
+		waitpid(-1, 0, 0);
+		return (0);
+	}
 }
-
-char    **ft_path(char  **envp)
-{
-    char    *paths;
-    char    **path;
-    int     i;
-
-    if (!envp)
-        return (0);
-    i = 0;
-    while (*(envp + i))
-    {
-        if (!ft_strncmp(*(envp + i), "PATH", 4))
-        {
-            paths = ft_strdup(*(envp + i) + 5);
-            break;
-        }
-        i++;
-    }
-    path = ft_split(paths, ':');
-    i = 0;
-    while (*(path + i))
-    {
-        *(path + i) = ft_strjoin(*(path + i), "/");
-        i++;
-    }
-    free(paths);
-    return (path);
-}
-
-char    *ft_cmd(char *cmd, char **path)
-{
-    char    *tmp;
-    char    *cmmd;
-    int     i;
-
-    if (!path)
-        return (0);
-    i = 0;
-    while (*(path + i))
-    {
-        tmp = ft_strjoin(*(path + i), cmd);
-        if (!access(tmp, F_OK | X_OK))
-        {
-            cmmd = tmp;
-            free(tmp);
-            break;
-        }
-        free(tmp);
-        i++;
-    }
-    return (cmmd);
-}
-
-int main(int argc, char **argv, char **envp)
-{
-    char    **path;
-    char    *cmd;
-    int     i;
-
-    path = ft_path(envp);
-    cmd = ft_cmd("ls", path);
-    printf("%s", cmd);
-    while(1);
-}
-
-// char    *get_path(char *cmd, char **envp)
-// {
-//     char    *path;
-//     char    *tmp;
-//     char    **paths;
-//     int     i;
-
-//     i = 0;
-//     tmp = cmd;
-//     cmd = ft_strjoin("/", cmd);
-//     ft_free(&tmp);
-//     while (*(envp + i))
-//     {
-//         if (!ft_strncmp(*(envp + i), "PATH", 4))
-//         {
-//             path = ft_strdup(*(envp + i) + 5);
-//             break;
-//         }
-//         i++;
-//     }
-//     paths = ft_split(path, ':');
-//     ft_free(&path);
-//     i = 0;
-//     while (*(paths + i))
-//     {
-//         tmp = cmd;
-//         cmd = ft_strjoin(*(paths + i), tmp);
-//         if (!access(tmp, F_OK | X_OK))
-//         {
-//             free(cmd);
-//             cmd = tmp;
-//             break;
-//         }
-//         i++;
-//     }
-//     return (cmd);
-// }
-// int main(int argc, char ** argv, char **envp)
-// {
-//     //./pipex "ls -l"
-//     char    *cmd;
-//     char    **args;
-//     char    *tmp;
-//     char    *path;
-//     char    **paths;
-//     int     i;
-//     pid_t   id;
-//     int     status;
-//     if (argc == 2)
-//     {
-//         args = ft_split(*(argv + 1), ' ');
-//         // i = 0;
-//         // while (*(args + i))
-//         // {
-//         //     printf("%s \n",*(args + i));
-//         //     i++;
-//         // }
-//         cmd = get_path(*args, envp);
-//         // cmd = *args;
-//         // tmp = cmd;
-//         // cmd = ft_strjoin("/", cmd);
-//         // free(tmp);
-//         // tmp = 0;
-//         // // printf("%s \n",cmd);
-//         // i = 0;
-//         // while (*(envp + i))
-//         // {
-//         //     if (!ft_strncmp(*(envp + i), "PATH", 4))
-//         //     {
-//         //         path = ft_strdup(*(envp + i) + 5);
-//         //         break;
-//         //     }
-//         //     i++;
-//         // }
-//         // paths = ft_split(path, ':');
-//         // i = 0;
-//         // while (*(paths + i))
-//         // {
-//         //     tmp = ft_strjoin(*(paths + i), cmd);
-//         //     if (!access(tmp, F_OK | X_OK))
-//         //     {
-//         //         free(cmd);
-//         //         cmd = tmp;
-//         //         break;
-//         //     }
-//         //     i++;
-//         // }
-//         // // printf("%s ",cmd);
-//         // free(path);
-//         id = fork();
-//         if (id >= 0)
-//         {
-//             if (!id)
-//             {
-//                 execve(cmd, args, 0);
-//             }
-//         }
-//         else
-//         {
-//             wait(&status);
-//         }   
-//     }
-// }

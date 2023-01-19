@@ -6,16 +6,32 @@
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 14:36:12 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/17 14:55:44 by obahi            ###   ########.fr       */
+/*   Updated: 2023/01/19 12:56:12 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include<pipex.h>
+#include"pipex.h"
+
+void	ft_perror(int n, const char *str)
+{
+	if (n == -1)
+	{
+		perror(str);
+		exit(1);
+	}
+}
 
 void	ft_free(char **ptr)
 {
-	free(*ptr);
-	*ptr = 0;
+	int	i;
+
+	i = 0;
+	while (*(ptr + i))
+	{
+		free(*(ptr + i));
+		i++;
+	}
+	free(ptr);
 }
 
 char	**ft_path(char **envp)
@@ -37,13 +53,14 @@ char	**ft_path(char **envp)
 		i++;
 	}
 	path = ft_split(paths, ':');
+	free(paths);
+	paths = 0;
 	i = 0;
 	while (*(path + i))
 	{
 		*(path + i) = ft_strjoin(*(path + i), "/");
 		i++;
 	}
-	free(paths);
 	return (path);
 }
 
@@ -62,10 +79,9 @@ char	*ft_cmd(char *cmd, char **path)
 		if (!access(tmp, F_OK | X_OK))
 		{
 			cmmd = tmp;
-			free(tmp);
 			break ;
 		}
-		free(tmp);
+		// free(tmp);
 		i++;
 	}
 	return (cmmd);
