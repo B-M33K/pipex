@@ -18,18 +18,21 @@ SRC = 	ft_clean.c \
 OBJ = $(SRC:.c=.o)
 HEADER = pipex.h
 RM = rm
+
+PURPLE='\033[38;5;141m'
+
 all : $(NAME)
 
-$(NAME) : $(OBJ) $(LIBFT) 
+$(NAME) : $(OBJ) $(LIBFT)
 	$(CC) $(LIBFT) $(OBJ) -o $@
 
 %.o : %.c $(HEADER)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT) :
-	$(MAKE) -C libft
+	$(MAKE) -C libft 
 	$(MAKE) -C libft clean
-	
+
 clean :
 	$(RM) -f $(OBJ)
 

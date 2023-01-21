@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: obahi <obahi@student.1337.ma>              +#+  +:+       +#+        */
+/*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/11 12:20:59 by obahi             #+#    #+#             */
-/*   Updated: 2022/10/23 09:12:13 by obahi            ###   ########.fr       */
+/*   Updated: 2023/01/21 13:03:17 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"libft.h"
-#include <stdio.h>
 
 static int	ft_word_count(const char *s, char c)
 {

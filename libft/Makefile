@@ -49,6 +49,7 @@ BOBJ = $(BSRC:.c=.o)
 HEADER = libft.h
 RM = rm
 AR = ar
+PURPLE='\033[38;5;141m'
 
 all : $(NAME)
 
