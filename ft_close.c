@@ -1,34 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_close.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/09 10:43:08 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/21 11:17:54 by obahi            ###   ########.fr       */
+/*   Created: 2023/01/21 10:41:40 by obahi             #+#    #+#             */
+/*   Updated: 2023/01/21 10:42:06 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"libft.h"
+#include"pipex.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+void	ft_close(int t[2])
 {
-	char	*join;
-	char	*tmp2;
-
-	if (!s1)
-		s1 = ft_strdup("");
-	tmp2 = 0;
-	join = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (join)
-	{
-		tmp2 = join;
-		while (*s1)
-			*tmp2++ = *s1++;
-		while (*s2)
-			*tmp2++ = *s2++;
-		*tmp2 = '\0';
-	}
-	return (join);
+	close(t[0]);
+	close(t[1]);
 }

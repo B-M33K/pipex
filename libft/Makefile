@@ -47,7 +47,7 @@ BSRC = 	ft_lstadd_back.c \
 OBJ = $(SRC:.c=.o)
 BOBJ = $(BSRC:.c=.o)
 HEADER = libft.h
-RM = rm -f
+RM = rm
 AR = ar
 
 all : $(NAME)
@@ -55,18 +55,17 @@ all : $(NAME)
 $(NAME) : $(OBJ)
 	$(AR) cr $@ $^
 
-%.o : $(HEADER)
+%.o : %.c $(HEADER)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 bonus : $(NAME) $(BOBJ)
 	$(AR) cr $(NAME) $(BOBJ)
 
-$(BOBJ) : $(HEADER)
-
 clean :
-	$(RM)  $(OBJ)  $(BOBJ)
+	$(RM) -f $(OBJ)  $(BOBJ)
 
 fclean : clean
-	$(RM) $(NAME)
+	$(RM) -f $(NAME)
 
 re : fclean all
 

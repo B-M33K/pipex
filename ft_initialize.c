@@ -1,34 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_initialize.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/09 10:43:08 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/21 11:17:54 by obahi            ###   ########.fr       */
+/*   Created: 2023/01/21 10:39:03 by obahi             #+#    #+#             */
+/*   Updated: 2023/01/21 10:39:22 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"libft.h"
+#include"pipex.h"
 
-char	*ft_strjoin(char const *s1, char const *s2)
+t_execve	*ft_initialize(char **envp, char *argv, int t[2], int i)
 {
-	char	*join;
-	char	*tmp2;
+	t_execve	*exe;
+	char		**path;
 
-	if (!s1)
-		s1 = ft_strdup("");
-	tmp2 = 0;
-	join = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (join)
-	{
-		tmp2 = join;
-		while (*s1)
-			*tmp2++ = *s1++;
-		while (*s2)
-			*tmp2++ = *s2++;
-		*tmp2 = '\0';
-	}
-	return (join);
+	exe = malloc(sizeof(t_execve));
+	if (!exe)
+		return (0);
+	path = ft_path(envp);
+	exe -> envp = envp;
+	exe -> args = ft_split(argv, ' ');
+	exe -> cmd = ft_cmd(*(exe -> args), path);
+	exe -> t1 = t[i];
+	exe -> i = i;
+	exe -> t2 = t[(i + 1) % 2];
+	ft_free(path);
+	return (exe);
 }

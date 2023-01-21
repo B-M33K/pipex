@@ -6,17 +6,11 @@
 /*   By: obahi <obahi@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/17 11:06:46 by obahi             #+#    #+#             */
-/*   Updated: 2023/01/20 20:53:45 by obahi            ###   ########.fr       */
+/*   Updated: 2023/01/21 10:42:10 by obahi            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"pipex.h"
-
-static	void	ft_close(int t[2])
-{
-	close(t[0]);
-	close(t[1]);
-}
 
 int	main(int argc, char **argv, char **envp)
 {
@@ -26,10 +20,10 @@ int	main(int argc, char **argv, char **envp)
 	int			infile;
 	int			outfile;
 
-	exec1 = malloc(sizeof(t_execve));
-	exec2 = malloc(sizeof(t_execve));
 	if (argc == 5)
 	{
+		exec1 = malloc(sizeof(t_execve));
+		exec2 = malloc(sizeof(t_execve));
 		ft_open(&infile, *(argv + 1), O_RDONLY, 0);
 		ft_open(&outfile, *(argv + 4), O_WRONLY | O_TRUNC | O_CREAT, 0777);
 		ft_dup2(infile, 0);
